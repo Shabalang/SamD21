@@ -1,0 +1,10 @@
+/* function that outputs a character to the SERCOM4 in USART mode.
+   The function should check whether the DRE bit in the INTFLAG register is 1.
+   If yes, write the character into the DATA register and return.
+*/
+
+void putchSERCOM4USART(uint8_t ch)
+{
+	while(!(REG_SERCOM4_USART_INTFLAG & SERCOM_USART_INTFLAG_DRE));
+	REG_SERCOM4_USART_DATA = (uint16_t) ch;
+}
