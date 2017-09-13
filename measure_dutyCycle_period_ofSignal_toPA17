@@ -1,0 +1,48 @@
+/* measure the duty cycle and period of the signal connected to the PA17 (EXTINT1) pin
+  using TC3 assuming that fGCLK_TC3 = 24 MHz
+  fGCLK_TC3 = 24 MHz. 
+*/
+
+#include <asf.h>
+void sysClkGeneration (void);
+int main (void)
+{
+	uint32_t period, duty, temp;
+	system_init();
+	sysClkGeneration();
+	// Use PA17 (EXTINT1) to connect to signal to be measured
+	REG_PORT_WRCONFIG0 = PORT_WRCONFIG_HWSEL +
+		PORT_WRCONFIG_WRPMUX + PORT_WRCONFIG_PMUX(0x0) +
+		PORT_WRCONFIG_PMUXEN + PORT_WRCONFIG_PINMASK(0x02);
+	// Connect event user TC3 to channel 1
+	REG_EVSYS_USER = EVSYS_USER_CHANNEL(2) + 					
+		EVSYS_USER_USER(EVSYS_ID_USER_TC3_EVU);
+	// assign EXTINT1 to channel 1, asynchronous path, detect both edges
+	REG_EVSYS_CHANNEL =
+		EVSYS_CHANNEL_EDGSEL_BOTH_EDGES + EVSYS_CHANNEL_PATH_ASYNCHRONOUS +
+		EVSYS_CHANNEL_EVGEN(EVSYS_ID_GEN_EIC_EXTINT_1) +
+		EVSYS_CHANNEL_CHANNEL(0x1);
+    REG_TC3_CTRLC = TC_CTRLC_CPTEN1 + TC_CTRLC_CPTEN0; // enable capt. on CC1 & CC0
+		while(!(REG_TC3_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+		REG_TC3_EVCTRL = TC_EVCTRL_TCEI + TC_EVCTRL_EVACT_PWP;
+		REG_TC3_CTRLBCLR = TC_CTRLBCLR_DIR; // TC3 count up
+		while(!(REG_TC3_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+		REG_TC3_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY + 
+				TC_CTRLA_PRESCALER_DIV1 + TC_CTRLA_WAVEGEN_NFRQ +
+				TC_CTRLA_MODE_COUNT32 + TC_CTRLA_ENABLE;
+		while(!(REG_TC3_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+		REG_TC3_INTFLAG = TC_INTFLAG_MC0 + TC_INTFLAG_MC1; // clear MC0 and MC1 flags
+		// wait until both CC0 and CC1 have captured
+		while((!(REG_TC3_INTFLAG & TC_INTFLAG_MC0)) & (!(REG_TC3_INTFLAG & 
+				TC_INTFLAG_MC1)));
+    REG_TC3_READREQ = TC_READREQ_RREQ + TC_READREQ_ADDR(0x18); // read CC0
+	while(!(REG_TC3_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for read synchronization
+	temp = REG_TC3_COUNT32_CC0; // save pulse width
+	REG_TC3_READREQ = TC_READREQ_RREQ + TC_READREQ_ADDR(0x1C); // read CC1
+	while(!(REG_TC3_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for read synchronization
+	period = REG_TC3_COUNT32_CC1; // represented in no. of clock cycles
+	duty = (temp * 100)/period; // represented in no. of clock cycles
+	while (1) {
+  	// do other things
+	  }
+}
