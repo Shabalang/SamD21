@@ -1,0 +1,32 @@
+/* function to configure SERCOM4, operate with the following setting assuming fREF = 24,000,000 Hz:
+      Asynchronous USART frame without parity
+      16x over-sampling using arithmetic baud rate generation
+      PB10/PAD[0] pin used as Tx, PB11/PAB[1] pin used as Rx—(SAMD21 Explaine PRO)
+      Select 7-8-9 bits (16x oversampling) sample adjustment
+       8 data bits, one stop bit, no parity
+       lsb transmitted first
+       TxD change on the rising XCK edge and received data sample on the XCK falling edge (irrelevant to asynchronous mode)
+       Immediate buffer overflow notification
+       Using internal clock and set baud rate to 115200 baud
+       Enable both reception and transmission
+       Enable start of frame detection
+*/
+
+void SERCOM4Init(void)
+{
+	REG_PORT_DIRSET1 = 0x01 << 8; // configure PB08 for output (used by Tx)
+	REG_PORT_DIRCLR1 = 0x01 << 9; // configure PB09 for input (used by Rx)
+	REG_PORT_WRCONFIG1 = PORT_WRCONFIG_WRPMUX + PORT_WRCONFIG_PMUX(0x3) +
+		PORT_WRCONFIG_PMUXEN + PORT_WRCONFIG_PINMASK(0x03<<8);
+	REG_SERCOM4_USART_BAUD = 60503; // set baud rate to 115200 baud (63858 for 38400 baud)
+	REG_SERCOM4_USART_CTRLB = SERCOM_USART_CTRLB_RXEN + SERCOM_USART_CTRLB_TXEN + SERCOM_USART_CTRLB_SFDE +
+	 		SERCOM_USART_CTRLB_CHSIZE(0);
+	while(REG_SERCOM4_USART_SYNCBUSY & SERCOM_USART_SYNCBUSY_CTRLB);
+	REG_SERCOM4_USART_CTRLA = SERCOM_USART_CTRLA_DORD + 
+			SERCOM_USART_CTRLA_RXPO(1) + SERCOM_USART_CTRLA_SAMPR(0) + 
+			SERCOM_USART_CTRLA_IBON + SERCOM_USART_CTRLA_RUNSTDBY + 
+			SERCOM_USART_CTRLA_MODE_USART_INT_CLK;
+	while(REG_SERCOM4_USART_SYNCBUSY & SERCOM_USART_SYNCBUSY_ENABLE);
+	REG_SERCOM4_USART_CTRLA |= SERCOM_USART_CTRLA_ENABLE;
+	while(REG_SERCOM4_USART_SYNCBUSY & SERCOM_USART_SYNCBUSY_ENABLE);
+}
