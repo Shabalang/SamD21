@@ -1,0 +1,19 @@
+/*a function that converts a decimal string into its binary equivalent.
+  The pointer to the string is passed to this function.
+ */
+
+uint32_t ASCII2int(uint8_t *ptr)
+{
+	uint32_t		ix = 0;
+	uint8_t		sign = '+';
+	if(*ptr == '-'){
+		sign = '-';
+		ptr++;
+	}
+	while (*ptr != 0){
+		ix = ix * 10 + (*ptr - '0');
+		ptr++;
+	}
+	if (sign == '-')	 ix = -ix;
+	return ix;
+}
