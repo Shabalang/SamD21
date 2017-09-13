@@ -1,0 +1,19 @@
+/* a function that converts a binary number into an ASCII string
+   terminated by a NULL character.
+*/
+void int2ASCII (uint32_t ix, uint8_t *ptr)
+{
+	uint8_t 		sign, *p;
+	uint16_t 	len, j;
+	sign	= '+'; 	len	= 0;
+	p	= ptr; // save a copy of the pointer
+	if (ix < 0) { // find the magnitude for a negative number
+		sign = '-';
+		ix= -ix;
+	}
+	do { // convert every decimal digit into ASCII code
+		*ptr 	= (ix % 10) + '0';
+		ptr++;
+		len++;
+		ix 		/= 10;
+	} while (ix != 0); 
