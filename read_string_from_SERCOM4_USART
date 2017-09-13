@@ -1,0 +1,20 @@
+/* a function that can reads a string from the SERCOM4 USART port. */
+
+	#define 	ENTER	0x0D
+	#define 	BS		0x08
+	#define 	SPACE	0x20
+	void getsSERCOM4USART(uint8_t *ptr)
+	{
+		uint8_t cx;
+		while((cx = getchSERCOM4USART()) != ENTER){ // read an ENTER character?
+			*ptr = cx;
+			putchSERCOM4USART(cx); // echo the entered character 
+			if (cx == BS){ // Is it a back space character?
+				putchSERCOM4USART(SPACE);
+				putchSERCOM4USART(BS);
+				ptr--;
+			}
+			else ptr++;
+		}
+		*ptr = 0; // terminate the string with a NULL character
+}
