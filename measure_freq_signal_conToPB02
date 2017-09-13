@@ -1,0 +1,37 @@
+/* measure the frequency of the signal connected to the PB02 (EXTINT2) pin using TC4
+   fGCLK_TC4 = 24 MHz. */
+   
+   #include <asf.h>
+void sysClkGeneration (void);
+void delayby100ms (uint32_t k);
+int main (void)
+{
+	uint32_t freq;
+	system_init();
+	sysClkGeneration();
+// Configure PB02 pin for peripheral A (used as EIC EXTINT2)
+	REG_PORT_WRCONFIG1 = PORT_WRCONFIG_WRPMUX + PORT_WRCONFIG_PMUX(0x0) +
+	PORT_WRCONFIG_PMUXEN + PORT_WRCONFIG_PINMASK(0x04);
+// Connect event user TC4 to channel 2
+	REG_EVSYS_USER = EVSYS_USER_CHANNEL(3) + EVSYS_USER_USER(EVSYS_ID_USER_TC4_EV
+// assign EXTINT2 to channel 2, asynchronous path, detect rising edges
+	REG_EVSYS_CHANNEL =
+		EVSYS_CHANNEL_EDGSEL_RISING_EDGE + EVSYS_CHANNEL_PATH_ASYNCHRONOUS +
+		EVSYS_CHANNEL_EVGEN(EVSYS_ID_GEN_EIC_EXTINT_2) +
+		EVSYS_CHANNEL_CHANNEL(0x2);
+  	REG_TC4_EVCTRL = TC_EVCTRL_TCEI + TC_EVCTRL_EVACT_COUNT; // enable event input for counting
+	REG_TC4_CTRLBCLR = TC_CTRLBCLR_DIR; // TC4 count up
+	while (!(REG_TC4_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+	REG_TC4_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY +
+		TC_CTRLA_PRESCALER_DIV1 + TC_CTRLA_WAVEGEN_NFRQ + 
+		TC_CTRLA_MODE_COUNT32 + TC_CTRLA_ENABLE; // enable TC4 to count
+	while(!(REG_TC4_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+	delayby100ms(10); // wait for 1 second
+	REG_TC4_READREQ = TC_READREQ_RREQ + TC_READREQ_ADDR(0x10); // request to read COUNT
+	while(!(REG_TC4_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for read synchronization
+	freq = REG_TC4_COUNT32_COUNT; // save frequency
+	REG_TC4_CTRLA = 0; // disable TC4
+	while (1) {
+		// ds stuff
+	}
+}
