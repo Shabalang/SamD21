@@ -1,0 +1,19 @@
+/* 
+  generate a 1-kHz PWM waveform with 70% duty cycle from the PB11 (TC5/WO[1]) pin assuming that fGCLK_TC5 is 24 MHz.
+*/
+
+{
+  // configure PB11 pin for use by peripheral E
+    REG_PORT_WRCONFIG1 = PORT_WRCONFIG_WRPMUX + PORT_WRCONFIG_PMUX(0x4) +
+        PORT_WRCONFIG_PMUXEN + PORT_WRCONFIG_PINMASK(0x800);
+    REG_PORT_DIRSET1 = 0x01 << 11; // configure PB11 for output
+    REG_TC5_COUNT16_CC0 = 23999; // set frequency to 1-kHz
+    while (!(REG_TC5_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+    REG_TC5_COUNT16_CC1 = 16799; // set duty cycle to 70%
+    while(!(REG_TC5_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+    // select 16-bit matched PWM mode and enable counter
+    REG_TC5_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY +
+      TC_CTRLA_PRESCALER_DIV1 + TC_CTRLA_WAVEGEN_MPWM + 
+      TC_CTRLA_MODE_COUNT16 + TC_CTRLA_ENABLE;
+    while(!(REG_TC5_INTFLAG & TC_INTFLAG_SYNCRDY));
+  }
