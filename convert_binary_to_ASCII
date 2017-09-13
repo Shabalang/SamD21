@@ -16,4 +16,17 @@ void int2ASCII (uint32_t ix, uint8_t *ptr)
 		ptr++;
 		len++;
 		ix 		/= 10;
-	} while (ix != 0); 
+	} while (ix != 0);
+	if (sign == '-'){
+	*ptr = '-';
+	ptr++;
+	len++;
+	}
+	for(j = 0; j < len/2; j++){
+		p[len]	= p[j]; // p[len] is a temporary storage  
+		p[j]		= p[len-j-1];
+		p[len-j-1]	= p[len];
+	}
+	p[len] = 0; // terminate the string with a NULL character
+}
+
