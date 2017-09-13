@@ -1,0 +1,18 @@
+/* 
+   configures the XOSC32K module with the following parameters
+    Use an 32.768 kHz crystal oscillator as a source
+    65536 OSCULP32K cycles of startup time
+    Run in standby mode
+    Enable automatic amplitude control
+    Enable 32kHz output
+    Enable the XOSC32 module
+*/
+
+{
+  REG_SYSCTRL_XOSC32K = SYSCTRL_XOSC32K_STARTUP(0x6) + 
+	SYSCTRL_XOSC32K_RUNSTDBY + SYSCTRL_XOSC32K_AAMPEN + 
+	SYSCTRL_XOSC32K_EN32K + SYSCTRL_XOSC32K_XTALEN;
+  REG_SYSCTRL_XOSC32K |= SYSCTRL_XOSC32K_ENABLE; // set ENABLE bit
+  while(!(REG_SYSCTRL_PCLKSR & SYSCTRL_PCLKSR_XOSC32KRDY));
+
+}
