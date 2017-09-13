@@ -1,0 +1,18 @@
+/*  configures the OSC32K module with the following parameters
+  130 OSC32K cycles of startup time
+  Run in standby
+  Disable write lock
+  Enable 32kHz output
+  Enable the OSC32K module
+*/
+
+{
+  uint32_t temp;
+	temp = (*(uint32_t *)0x806024) & 0x00001FC0; 
+					// read and extract OSC32K calibration  bits
+	REG_SYSCTRL_OSC32K = SYSCTRL_OSC32K_STARTUP(0x7) + 
+			SYSCTRL_OSC32K_RUNSTDBY + SYSCTRL_OSC32K_EN32K + 
+			(temp << 10) + SYSCTRL_OSC32K_ENABLE;
+	while(!(REG_SYSCTRL_PCLKSR & SYSCTRL_PCLKSR_OSC32KRDY));
+
+}
