@@ -1,0 +1,30 @@
+/* code to generate a two-tone siren that alternates between 440 and 880 Hz
+   fGCLK_TC3 = 24 MHz
+   each tone lasting for 500 ms
+/*
+
+int main (void)
+{
+	system_init();
+	sysClkGeneration();
+	// configure PB03/TC6 WO[1] pin for peripheral E
+	REG_PORT_WRCONFIG1 = PORT_WRCONFIG_WRPMUX + PORT_WRCONFIG_PMUX(0x4) +
+					   PORT_WRCONFIG_PMUXEN + PORT_WRCONFIG_PINMASK(0x0008);
+	REG_PORT_DIRSET1 = 0x01 << 3; // Configure PB03 pin for output 
+	REG_TC6_CTRLC = 0; // disable TC6 capture 
+	REG_TC6_CTRLBCLR = TC_CTRLBCLR_DIR; // configure TC6 to count up
+	while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+	REG_TC6_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY + 
+				   TC_CTRLA_PRESCALER_DIV8 + TC_CTRLA_WAVEGEN_MFRQ + 
+				   TC_CTRLA_MODE_COUNT16 + TC_CTRLA_ENABLE; 
+   while (1) {
+		REG_TC6_COUNT16_CC0 = 3408; // set frequency to 440 Hz
+		while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		REG_TC6_COUNT16_CC1 = 1702;
+		delayby10ms(50);// wait for 500 ms
+		REG_TC6_COUNT16_CC0 = 1704;  // set frequency to 880 Hz
+		while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		REG_TC6_COUNT16_CC1	= 852;
+		delayby10ms(50);// wait for 500 ms
+  }
+}
