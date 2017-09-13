@@ -1,0 +1,8 @@
+/* a function that outputs an integer to the USART port.
+*/
+	void SERCOM4USART_puti (uint32_t  i)	// Put Integer to USART
+	{
+		uint8_t s[12];
+		int2ASCII(i, s);
+		putsSERCOM4USART (s);
+	}
