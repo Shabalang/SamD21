@@ -1,0 +1,6 @@
+/* config TC3 module so that it can generate an event whene
+  the counter overflows or channel 1 compare match/capture occurs
+*/
+{
+  REG_TC3_EVCTRL = TC_EVCTRL_OVFEO + TC_EVCTRL_MCEO1;
+}
