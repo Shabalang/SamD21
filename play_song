@@ -1,0 +1,100 @@
+/* Guess what it is*/
+#define 	C4	5733	// TOP value for C4 note (261.63 Hz)
+#define 	C4S	5412	// TOP value for C4S note (277.18 Hz)
+#define 	D4F	5412	// TOP value for D4F note (277.18 Hz)
+#define 	D4	5108	// TOP value for D4 note (293.66 Hz)
+#define 	D4S	4821	// 311.13 Hz
+#define 	E4F	4821	// 311.13 Hz
+#define 	E4	4551	// 329.63 Hz
+#define 	F4	4295	// 349.23 Hz
+#define	F4S	4054	// 369.99 Hz
+#define 	G4F	4054	// 369.99 Hz
+#define 	G4	3827	// 392.00 Hz
+#define 	G4S	3612	// 415.30 Hz
+#define 	A4F	3612	// 415.30 Hz
+#define 	A4	3409	// 440.00 Hz
+#define 	A4S	3218	// 466.16 Hz
+#define 	B4F	3218	// 466.16 Hz
+#define 	B4	3037	// 493.88 Hz
+#define 	C5	2867	// 523.25 Hz
+#define 	C5S	2706	// 554.37 Hz
+#define 	D5F	2706	// 554.37 Hz
+#define 	D5	2554	// 587.33 Hz
+#define 	D5S	2411	// 622.25 Hz
+#define 	E5F	2411	// 622.25 Hz
+#define 	E5	2275	// 659.26 Hz
+#define 	F5	2148	// 698.46 Hz
+#define 	F5S	2027	// 739.99 Hz
+#define 	G5F	2027	// 739.99 Hz
+#define 	G5	1913	// 783.99 Hz
+#define 	G5S	1806	// 830.61 Hz
+#define	A5F	1806	// 830.61 Hz
+#define 	A5	1705	// 880.00 Hz
+#define 	A5S	1609	// 932.33 Hz
+#define 	B5F	1609	// 932.33 Hz
+#define 	B5	1519	// 987.77 Hz
+#define 	ZZ	30	// 50000 Hz
+uint16_t score[] = {
+	F4, G4, A4, B4F, ZZ, B4F, C5, ZZ, C5, A4, ZZ, A4, C5, B4F, A4, B4F, G4, A4, F4, G4,
+	A4, B4F, ZZ, B4F, C5, ZZ, C5, A4, C5, B4F, A4, B4F, G4, F4, ZZ, C5, ZZ, C5, F5, E5, D5, C5,
+	C5, A4, C5, B4F, A4, B4F, G4, A4, C5, ZZ, C5, F5, E5, D5, C5, ZZ, C5,A4, C5,
+	C5, B4F, G4, F4, ZZ, C5, B4F, G4, F4, ZZ, G4, ZZ,
+	A4, ZZ, C5, F5, E5, D5, C5, ZZ, C5, A4, C5, B4F, A4, B4F, G4, F4, 0
+  };
+uint32_t dur[] = {
+	30, 10, 60, 20, 3, 60, 20, 3, 60, 20, 3, 40, 40, 60, 20, 40, 40, 120, 30, 10,
+	60, 20, 3, 60, 20, 3, 80, 40, 40, 60, 20, 40, 40, 80, 40, 20, 3, 20, 60, 20, 60, 20,
+	80, 40, 40, 60, 20, 40, 40, 120, 20, 3, 20, 60, 20, 60, 20, 3, 80, 40, 40,
+	40, 80, 40, 120, 40, 160, 80, 80, 40, 40, 40, 40,
+	80, 40, 40, 60, 20, 60, 20, 3, 80, 40, 40, 60, 20, 40, 40, 120
+  };
+uint32_t periCk[33] = {GCLK_CLKCTRL_ID_WDT, GCLK_CLKCTRL_ID_RTC,
+	GCLK_CLKCTRL_ID_EIC, GCLK_CLKCTRL_ID_EVSYS_0,
+	GCLK_CLKCTRL_ID_EVSYS_1, GCLK_CLKCTRL_ID_EVSYS_2,
+	GCLK_CLKCTRL_ID_EVSYS_3, GCLK_CLKCTRL_ID_EVSYS_4,
+	GCLK_CLKCTRL_ID_EVSYS_5, GCLK_CLKCTRL_ID_EVSYS_6,
+	GCLK_CLKCTRL_ID_EVSYS_7, GCLK_CLKCTRL_ID_EVSYS_8,
+	GCLK_CLKCTRL_ID_EVSYS_9, GCLK_CLKCTRL_ID_EVSYS_10,
+	GCLK_CLKCTRL_ID_EVSYS_11, GCLK_CLKCTRL_ID_SERCOMX_SLOW,
+	GCLK_CLKCTRL_ID_SERCOM0_CORE, GCLK_CLKCTRL_ID_SERCOM1_CORE,
+	GCLK_CLKCTRL_ID_SERCOM2_CORE, GCLK_CLKCTRL_ID_SERCOM3_CORE,
+	GCLK_CLKCTRL_ID_SERCOM4_CORE, GCLK_CLKCTRL_ID_SERCOM5_CORE,
+	GCLK_CLKCTRL_ID_TCC0_TCC1, GCLK_CLKCTRL_ID_TCC2_TC3,
+	GCLK_CLKCTRL_ID_TC4_TC5, GCLK_CLKCTRL_ID_TC6_TC7,
+	GCLK_CLKCTRL_ID_ADC, GCLK_CLKCTRL_ID_AC_DIG,
+	GCLK_CLKCTRL_ID_AC_ANA, GCLK_CLKCTRL_ID_DAC,
+	GCLK_CLKCTRL_ID_PTC, GCLK_CLKCTRL_ID_I2S_0, GCLK_CLKCTRL_ID_I2S_1
+  };
+  
+  void sysClkGeneration (void);
+void delayby10ms (uint32_t k);
+int main (void)
+{
+	uint16_t j;
+	system_init();
+	sysClkGeneration();
+	// Configure PB03/TC6WO[1] pin for peripheral E
+	REG_PORT_WRCONFIG1 = PORT_WRCONFIG_WRPMUX + PORT_WRCONFIG_PMUX(0x4) +
+ 			PORT_WRCONFIG_PMUXEN + PORT_WRCONFIG_PINMASK(0x0008);
+	REG_PORT_DIRSET1 = 0x01 << 3; // configure PB03 pin for output
+	REG_TC6_CTRLC = 0; // disable TC6 capture
+	REG_TC6_CTRLBCLR = TC_CTRLBCLR_DIR; // configure TC6 to count up
+	while (!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+	REG_TC6_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY +
+		TC_CTRLA_PRESCALER_DIV8 + TC_CTRLA_WAVEGEN_MFRQ +
+		TC_CTRLA_MODE_COUNT16 + TC_CTRLA_ENABLE;
+	j = 0;
+  	while (score[j]) {
+		REG_TC6_COUNT16_CC0 = score[j]; // set the frequency of the new note
+		while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		REG_TC6_COUNT16_CC1 = score[j] >> 1; // set the toggle point 
+//		while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		delayby10ms(dur[j]);
+		j++;
+	}
+	REG_TC6_CTRLA = 0; // disable TC6
+	while(1);
+}
+
+  
+  
