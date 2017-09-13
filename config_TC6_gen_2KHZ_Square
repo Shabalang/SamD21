@@ -1,0 +1,19 @@
+/* configure TC6 to generate a 2-kHz square wave from the PB03 (TC6/WO[1]) pin by selecting the MFRQ mode
+   assuming that fGCLK_TC6 = 24 MHz. Duty cycle will be 50%. 
+   
+/*
+
+{
+  REG_PORT_WRCONFIG1 	= PORT_WRCONFIG_WRPMUX + 
+      PORT_WRCONFIG_PMUX(0x04) + PORT_WRCONFIG_PMUXEN + 
+      PORT_WRCONFIG_PINMASK(0x0008);
+    REG_TC6_COUNT16_CC0 	= 5999; // set TC6/WO[1] frequency to 2-kHz
+    while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+    REG_TC6_COUNT16_CC1 	= 2999; // set waveform toggle point
+    while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait for write synchronization
+    REG_TC6_CTRLA 	= TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY +
+      TC_CTRLA_PRESCALER_DIV1 + TC_CTRLA_WAVEGEN_MFRQ + 
+      TC_CTRLA_MODE_COUNT16 + TC_CTRLA_ENABLE;
+    while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY));
+
+}
