@@ -1,0 +1,9 @@
+/* function that outputs a string to the SERCOM4 USART port.
+   The pointer to the string to be output is passed to this function.
+*/
+
+void putsSERCOM4USART(uint8_t *ptr)
+{
+	while(*ptr)
+	putchSERCOM4USART(*ptr++);
+};
