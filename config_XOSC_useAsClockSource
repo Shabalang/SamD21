@@ -1,0 +1,13 @@
+/*   
+   configure the XOSC with the following settings and make sure it is ready to be used as a clock source:
+   32768 OSC32KULP cycles
+   Enable automatic gain control
+   Disable ONDEMAND and enable RUNSTDBY
+   12-MHz external crystal oscillator
+*/
+
+{
+  REG_SYSCTRL_XOSC = SYSCTRL_XOSC_STARTUP(0xF) + SYSCTRL_XOSC_AMPGC + 
+	SYSCTRL_XOSC_RUNSTDBY + SYSCTRL_XOSC_XTALEN + SYSCTRL_XOSC_ENABLE;
+  while(!(REG_SYSCTRL_PCLKSR & SYSCTRL_PCLKSR_XOSCRDY));
+}
