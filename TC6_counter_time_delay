@@ -1,0 +1,77 @@
+/* 
+a set of functions that uses TC6 counter to create a time delay which is a multiple of 1 ms, 10 ms, 100 ms, and 1 s
+assuming that fGCLK_TC7 = 24 MHz.
+ 
+*/
+
+void delayby1ms (uint32_t k)
+{
+	REG_TC7_CTRLBSET = TC_CTRLBSET_DIR; 	// configure TC7 to count down
+	while(!(REG_TC7_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	REG_TC7_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY + 
+	    	TC_CTRLA_PRESCALER_DIV16 + TC_CTRLA_MODE_COUNT16 + TC_CTRLA_ENABLE;
+	while(!(REG_TC7_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	while(k){
+		REG_TC7_COUNT16_COUNT = 1500; 	// load 1500 into 16-bit COUNT
+		while(!(REG_TC7_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		REG_TC7_INTFLAG = TC_INTFLAG_OVF; 	// clear OVF flag
+		while(!(REG_TC7_INTFLAG & TC_INTFLAG_OVF)); 	// wait until OVF set to 1
+		k--;
+	}
+	REG_TC7_CTRLA &= !TC_CTRLA_ENABLE; 	// stop TC7
+}
+
+void delayby10ms (uint32_t k)
+{
+	REG_TC7_CTRLBSET = TC_CTRLBSET_DIR; 	// configure TC7 to count down
+	while(!(REG_TC7_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	REG_TC7_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY +
+		TC_CTRLA_PRESCALER_DIV16 + TC_CTRLA_MODE_COUNT16 + 
+		TC_CTRLA_ENABLE;
+	while(!(REG_TC7_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	while(k){
+		REG_TC7_COUNT16_COUNT = 15000; 	// load 15000 into 16-bit COUNT
+		 while(!(REG_TC7_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		REG_TC7_INTFLAG = TC_INTFLAG_OVF; 	// clear OVF flag
+		while(!(REG_TC7_INTFLAG & TC_INTFLAG_OVF)); 	// wait until OVF set to 1 
+		k--;
+	}
+	REG_TC7_CTRLA &= !TC_CTRLA_ENABLE; // disable TC7
+}
+
+void delayby100ms (uint32_t k)
+{
+	REG_TC6_CTRLBSET = TC_CTRLBSET_DIR; 	// configure TC6 to count down
+	while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	REG_TC6_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY +
+		TC_CTRLA_PRESCALER_DIV16 + TC_CTRLA_MODE_COUNT32 + 
+		TC_CTRLA_ENABLE;
+	while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	while(k){
+		REG_TC6_COUNT32_COUNT = 150000; 	// load 150,000 into 32-bit COUNT
+		while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		REG_TC6_INTFLAG = TC_INTFLAG_OVF; 	// clear OVF flag
+		while(!(REG_TC6_INTFLAG & TC_INTFLAG_OVF)); 	// wait until OVF flag set to 1
+		k--;
+	}
+	REG_TC6_CTRLA &= !TC_CTRLA_ENABLE; // disable TC6
+}
+
+void delayby1s (uint32_t k)
+{
+	REG_TC6_CTRLBSET = TC_CTRLBSET_DIR; 	// configure TC6 to count down
+	while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	REG_TC6_CTRLA = TC_CTRLA_PRESCSYNC_PRESC + TC_CTRLA_RUNSTDBY +
+		TC_CTRLA_PRESCALER_DIV16 + TC_CTRLA_MODE_COUNT32 + 
+		TC_CTRLA_ENABLE;
+	while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); 	// wait until sync ready
+	while(k){
+		REG_TC6_COUNT32_COUNT = 1500000; 	// load 1,500,000 into 32-bit COUNT
+		while(!(REG_TC6_INTFLAG & TC_INTFLAG_SYNCRDY)); // wait until sync ready
+		REG_TC6_INTFLAG = TC_INTFLAG_OVF; 	// clear OVF flag
+		while(!(REG_TC6_INTFLAG & TC_INTFLAG_OVF)); 	// wait until OVF set to 1
+		k--;
+	}
+	REG_TC6_CTRLA &= !TC_CTRLA_ENABLE; 	// disable TC6
+}
+
